@@ -1,5 +1,5 @@
 <template>
-  <div class="login-page">
+  <div class="page">
     <div class="login-panel">
       <div class="logo">
         <img class="logo" src="../assets/login-logo.png"/>
@@ -50,9 +50,17 @@
         this.$refs.loginFormRef.resetFields();
       },
       login(){
-        this.$refs.loginFormRef.validate((valid) => {
+        this.$refs.loginFormRef.validate(async (valid) => {
           if(!valid) return;
-
+          const res = await this.$http.post('login', this.loginForm);
+          if(!res.data.success) {
+            this.$message.error(res.data.msg);
+            return;
+          }
+          console.log(res);
+          console.log(res.data.obj.token);
+          window.sessionStorage.setItem("token", res.data.obj.token);
+          this.$router.push({path:'/app/home', query: {username: res.data.obj.username}});
         });
       }
     }
@@ -60,7 +68,7 @@
 </script>
 
 <style lang="less" scoped>
-  .login-page {
+  .page {
     height: 100%;
     background-color: #2b4b6b;
   }
